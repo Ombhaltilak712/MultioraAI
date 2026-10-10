@@ -1,14 +1,15 @@
 import { signInWithPopup } from 'firebase/auth';
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { auth, googleProvider } from '../../utils/firebase';
 import api from '../../utils/axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserdata } from '../redux/userSlice';
 import SideBar from '../components/SideBar';
 import ChatArea from '../components/ChatArea';
-import Artifact from '../components/Artifact';
-import LibraryView from '../components/LibraryView';
-import Landing from './Landing';
+
+const Landing = lazy(() => import('./Landing'));
+const Artifact = lazy(() => import('../components/Artifact'));
+const LibraryView = lazy(() => import('../components/LibraryView'));
 
 function Home() {
   const { userData } = useSelector((state) => state.user);
@@ -46,11 +47,13 @@ function Home() {
 
   if (!userData) {
     return (
-      <Landing
-        onGetStarted={googleLogin}
-        loginLoading={loginLoading}
-        loginError={loginError}
-      />
+      <Suspense fallback={<div className="h-screen bg-[#05060a]" />}>
+        <Landing
+          onGetStarted={googleLogin}
+          loginLoading={loginLoading}
+          loginError={loginError}
+        />
+      </Suspense>
     );
   }
 
@@ -74,11 +77,15 @@ function Home() {
         <SideBar activeView={currentView} onSelectView={setCurrentView} />
 
         {currentView === 'library' ? (
-          <LibraryView onBackToChat={() => setCurrentView('chat')} />
+          <Suspense fallback={<div className="flex-1 bg-[#07090e]" />}>
+            <LibraryView onBackToChat={() => setCurrentView('chat')} />
+          </Suspense>
         ) : (
           <>
             <ChatArea />
-            <Artifact />
+            <Suspense fallback={null}>
+              <Artifact />
+            </Suspense>
           </>
         )}
       </div>

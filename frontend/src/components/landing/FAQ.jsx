@@ -55,7 +55,16 @@ export default function FAQ() {
               <Reveal key={index} delay={index * 0.08} direction="up">
                 <GlassCard
                   onClick={() => toggleFAQ(index)}
-                  className={`p-5 sm:p-6 cursor-pointer transition-all duration-200 border ${
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      toggleFAQ(index);
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-expanded={isOpen}
+                  className={`p-5 sm:p-6 cursor-pointer transition-all duration-200 border focus-visible:outline-indigo-500 ${
                     isOpen
                       ? 'border-indigo-500/40 bg-indigo-500/[0.04]'
                       : 'border-white/[0.07] hover:border-white/15'

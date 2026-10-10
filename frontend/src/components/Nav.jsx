@@ -12,7 +12,7 @@ function Nav() {
   return (
     <>
       {selectedConversation && (
-        <header className="h-14 flex items-center justify-between px-4 sm:px-6 border-b border-white/[0.08] bg-[#090b12]/85 backdrop-blur-xl z-20 shrink-0">
+        <header className="h-14 flex items-center justify-between pl-14 pr-4 sm:px-6 lg:px-6 border-b border-white/[0.08] bg-[#090b12]/85 backdrop-blur-xl z-20 shrink-0">
           {/* Conversation Title & Meta */}
           <div className="flex items-center gap-2.5 min-w-0">
             <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-indigo-500/10 border border-indigo-500/25 shrink-0 text-indigo-400">

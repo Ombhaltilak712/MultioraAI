@@ -130,6 +130,16 @@ function SideBar({ activeView = 'chat', onSelectView }) {
     return () => window.removeEventListener('click', handleOutsideClick);
   }, []);
 
+  // Keyboard close for mobile drawer
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') setMobileOpen(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [mobileOpen]);
+
   const pinnedConversations = conversations.filter((c) => c.isPinned);
   const recentConversations = conversations.filter((c) => !c.isPinned);
 
@@ -248,6 +258,7 @@ function SideBar({ activeView = 'chat', onSelectView }) {
           <button
             className="hidden lg:flex items-center justify-center w-7 h-7 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] transition cursor-pointer"
             onClick={() => setCollapsed(true)}
+            aria-label="Collapse Sidebar"
             title="Collapse Sidebar"
           >
             <PanelLeftClose size={15} />
@@ -255,6 +266,7 @@ function SideBar({ activeView = 'chat', onSelectView }) {
 
           <button
             onClick={() => setMobileOpen(false)}
+            aria-label="Close sidebar"
             className="lg:hidden flex items-center justify-center w-7 h-7 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] transition cursor-pointer"
           >
             <X size={16} />
@@ -381,6 +393,7 @@ function SideBar({ activeView = 'chat', onSelectView }) {
             <div className="flex items-center gap-0.5">
               <button
                 onClick={() => setShowSettings(true)}
+                aria-label="Settings"
                 title="Settings"
                 className="w-7 h-7 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.08] flex items-center justify-center transition cursor-pointer"
               >
@@ -392,6 +405,7 @@ function SideBar({ activeView = 'chat', onSelectView }) {
                   await logOut();
                   dispatch(setUserdata(null));
                 }}
+                aria-label="Log Out"
                 title="Log Out"
                 className="w-7 h-7 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/15 flex items-center justify-center transition cursor-pointer"
               >
@@ -455,6 +469,7 @@ function SideBar({ activeView = 'chat', onSelectView }) {
           <div className="flex flex-col items-center justify-between h-full w-full py-4 bg-[#0a0c13]/95 backdrop-blur-xl">
             <div className="flex flex-col items-center gap-3">
               <button
+                aria-label="Expand Sidebar"
                 title="Expand Sidebar"
                 className="flex items-center justify-center w-9 h-9 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.08] transition cursor-pointer"
                 onClick={() => setCollapsed(false)}
@@ -463,6 +478,7 @@ function SideBar({ activeView = 'chat', onSelectView }) {
               </button>
 
               <button
+                aria-label="New Chat"
                 title="New Chat"
                 className="flex items-center justify-center w-9 h-9 rounded-xl text-white bg-linear-to-br from-indigo-500 to-violet-700 hover:opacity-90 transition cursor-pointer shadow-[0_0_15px_rgba(99,102,241,0.4)]"
                 onClick={handleCreateNewChat}
@@ -471,6 +487,7 @@ function SideBar({ activeView = 'chat', onSelectView }) {
               </button>
 
               <button
+                aria-label="Personal Library"
                 title="Personal Library"
                 className={`flex items-center justify-center w-9 h-9 rounded-xl transition cursor-pointer ${
                   activeView === 'library'
@@ -487,6 +504,7 @@ function SideBar({ activeView = 'chat', onSelectView }) {
             <div className="flex flex-col items-center gap-2.5">
               <button
                 onClick={() => setShowBilling(true)}
+                aria-label="Billing & Plans"
                 title="Billing & Plans"
                 className="w-8 h-8 rounded-lg text-amber-400 hover:bg-white/[0.08] flex items-center justify-center transition cursor-pointer"
               >

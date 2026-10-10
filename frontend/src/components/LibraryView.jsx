@@ -68,6 +68,15 @@ function LibraryView({ onBackToChat }) {
     };
   }, [activeTab]);
 
+  useEffect(() => {
+    if (!previewFile) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') setPreviewFile(null);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [previewFile]);
+
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     fetchFiles();
@@ -393,6 +402,7 @@ function LibraryView({ onBackToChat }) {
                         />
                         <button
                           type="button"
+                          aria-label="Confirm rename"
                           onClick={() => handleRename(file._id)}
                           className="px-2 py-1 bg-indigo-600 rounded-md text-[10.5px] font-semibold text-white hover:bg-indigo-500 cursor-pointer"
                         >
@@ -400,6 +410,7 @@ function LibraryView({ onBackToChat }) {
                         </button>
                         <button
                           type="button"
+                          aria-label="Cancel rename"
                           onClick={() => setEditingFile(null)}
                           className="px-2 py-1 bg-white/10 rounded-md text-[10.5px] text-slate-400 hover:text-white cursor-pointer"
                         >
@@ -444,6 +455,7 @@ function LibraryView({ onBackToChat }) {
                           setEditingFile(file);
                           setRenameInput(file.name);
                         }}
+                        aria-label="Rename file"
                         className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] transition cursor-pointer"
                         title="Rename"
                       >
@@ -452,6 +464,7 @@ function LibraryView({ onBackToChat }) {
                       <button
                         type="button"
                         onClick={() => handleDelete(file._id)}
+                        aria-label="Delete file"
                         className="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition cursor-pointer"
                         title="Delete"
                       >
@@ -509,6 +522,7 @@ function LibraryView({ onBackToChat }) {
                           <button
                             type="button"
                             onClick={() => setPreviewFile(file)}
+                            aria-label="Preview file"
                             className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] transition cursor-pointer"
                             title="Preview"
                           >
@@ -519,6 +533,7 @@ function LibraryView({ onBackToChat }) {
                             target="_blank"
                             rel="noopener noreferrer"
                             download
+                            aria-label="Download file"
                             className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] transition cursor-pointer"
                             title="Download"
                           >
@@ -530,6 +545,7 @@ function LibraryView({ onBackToChat }) {
                               setEditingFile(file);
                               setRenameInput(file.name);
                             }}
+                            aria-label="Rename file"
                             className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] transition cursor-pointer"
                             title="Rename"
                           >
@@ -538,6 +554,7 @@ function LibraryView({ onBackToChat }) {
                           <button
                             type="button"
                             onClick={() => handleDelete(file._id)}
+                            aria-label="Delete file"
                             className="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition cursor-pointer"
                             title="Delete"
                           >
@@ -595,6 +612,7 @@ function LibraryView({ onBackToChat }) {
                   <button
                     type="button"
                     onClick={() => setPreviewFile(null)}
+                    aria-label="Close preview modal"
                     className="w-8 h-8 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.08] flex items-center justify-center transition cursor-pointer"
                   >
                     <X size={16} />

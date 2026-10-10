@@ -60,6 +60,7 @@ function MessageBubble({ id, index, role, content, images = [], onEdit }) {
             </span>
             <button
               onClick={handleCancelEdit}
+              aria-label="Cancel editing"
               className="text-slate-400 hover:text-white"
             >
               <X size={14} />
@@ -191,6 +192,7 @@ function MessageBubble({ id, index, role, content, images = [], onEdit }) {
                         </span>
                         <button
                           type="button"
+                          aria-label="Copy code block"
                           className="flex items-center gap-1 text-[11px] font-medium text-slate-400 hover:text-white transition cursor-pointer"
                           onClick={() => copyCode(value)}
                         >
@@ -255,6 +257,7 @@ function MessageBubble({ id, index, role, content, images = [], onEdit }) {
               <button
                 type="button"
                 onClick={() => setIsEditing(true)}
+                aria-label="Edit message"
                 title="Edit message"
                 className="p-1 rounded-lg text-white/70 hover:text-white hover:bg-white/15 transition cursor-pointer"
               >
@@ -265,6 +268,7 @@ function MessageBubble({ id, index, role, content, images = [], onEdit }) {
             <button
               type="button"
               onClick={copyFullMessage}
+              aria-label="Copy message text"
               title="Copy message text"
               className={`p-1 rounded-lg transition cursor-pointer ${
                 isUser
@@ -293,6 +297,7 @@ function MessageBubble({ id, index, role, content, images = [], onEdit }) {
       {lightBox && (
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-6">
           <button
+            aria-label="Close image preview"
             className="absolute top-5 right-5 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 rounded-full p-2.5 transition cursor-pointer"
             onClick={() => setLightBox(null)}
           >

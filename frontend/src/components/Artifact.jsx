@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { useSelector } from 'react-redux';
 import { AnimatePresence, motion } from 'motion/react';
-import Editor from '@monaco-editor/react';
+
+const Editor = lazy(() => import('@monaco-editor/react'));
 import {
   Check,
   Code2,
@@ -103,6 +104,7 @@ function Artifact() {
               type="button"
               className="flex items-center justify-center w-7 h-7 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] transition-colors cursor-pointer shrink-0"
               onClick={onClose ?? (() => setCollapsed(true))}
+              aria-label={onClose ? 'Close panel' : 'Collapse panel'}
               title={onClose ? 'Close' : 'Collapse panel'}
             >
               {onClose ? <X size={15} /> : <PanelRightClose size={16} />}
@@ -123,6 +125,7 @@ function Artifact() {
             <button
               type="button"
               onClick={handleCopy}
+              aria-label="Copy active file"
               title={copied ? 'Copied to clipboard!' : 'Copy active file'}
               className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 cursor-pointer border ${
                 copied
@@ -240,6 +243,7 @@ function Artifact() {
                     <button
                       type="button"
                       onClick={() => setPreviewKey((k) => k + 1)}
+                      aria-label="Reload sandbox preview"
                       title="Reload sandbox preview"
                       className="p-1 rounded-md hover:text-white hover:bg-white/10 transition cursor-pointer"
                     >
@@ -270,23 +274,31 @@ function Artifact() {
               className="w-full h-full flex flex-col"
             >
               <div className="flex-1">
-                <Editor
-                  theme="vs-dark"
-                  language={detectLanguage(file?.name)}
-                  value={file?.content || ''}
-                  options={{
-                    readOnly: true,
-                    minimap: { enabled: false },
-                    fontSize: 13,
-                    wordWrap: 'on',
-                    automaticLayout: true,
-                    scrollBeyondLastLine: false,
-                    padding: { top: 16, bottom: 16 },
-                    lineNumbers: 'on',
-                    renderLineHighlight: 'all',
-                    fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)'
-                  }}
-                />
+                <Suspense
+                  fallback={
+                    <div className="flex items-center justify-center h-full text-xs font-mono text-slate-500">
+                      Loading code editor...
+                    </div>
+                  }
+                >
+                  <Editor
+                    theme="vs-dark"
+                    language={detectLanguage(file?.name)}
+                    value={file?.content || ''}
+                    options={{
+                      readOnly: true,
+                      minimap: { enabled: false },
+                      fontSize: 13,
+                      wordWrap: 'on',
+                      automaticLayout: true,
+                      scrollBeyondLastLine: false,
+                      padding: { top: 16, bottom: 16 },
+                      lineNumbers: 'on',
+                      renderLineHighlight: 'all',
+                      fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)'
+                    }}
+                  />
+                </Suspense>
               </div>
 
               {/* IDE Status Bar */}
@@ -316,6 +328,7 @@ function Artifact() {
       {/* Mobile Floating Trigger Button */}
       <button
         type="button"
+        aria-label="View Code Artifact"
         onClick={() => setMobileOpen(true)}
         className="lg:hidden fixed bottom-24 right-4 z-40 flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-linear-to-r from-indigo-500 to-violet-600 hover:opacity-95 text-white text-xs font-semibold shadow-xl shadow-indigo-500/25 border border-white/20 cursor-pointer transition active:scale-95"
       >
@@ -364,6 +377,7 @@ function Artifact() {
               type="button"
               className="flex items-center justify-center w-8 h-8 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.08] transition cursor-pointer border border-white/[0.06]"
               onClick={() => setCollapsed(false)}
+              aria-label="Expand artifact panel"
               title="Expand artifact panel"
             >
               <PanelRightOpen size={16} />

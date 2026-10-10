@@ -217,6 +217,7 @@ const ChatInput = forwardRef(function ChatInput(props, ref) {
 
               <button
                 type="button"
+                aria-label="Remove attached file"
                 className="ml-2 text-slate-500 hover:text-white transition cursor-pointer"
                 onClick={() => {
                   setSelectedFile(null);
@@ -232,6 +233,7 @@ const ChatInput = forwardRef(function ChatInput(props, ref) {
         {/* Multiline Composer Textarea */}
         <textarea
           ref={textareaRef}
+          aria-label="Chat message prompt"
           placeholder="Ask MultioraAI anything... (Press Enter to send, Shift+Enter for new line)"
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -259,6 +261,7 @@ const ChatInput = forwardRef(function ChatInput(props, ref) {
 
             <button
               type="button"
+              aria-label="Attach File"
               title="Attach File (PDF, Image)"
               className="flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] transition cursor-pointer"
               onClick={() => fileRef.current?.click()}
@@ -269,6 +272,7 @@ const ChatInput = forwardRef(function ChatInput(props, ref) {
             <button
               type="button"
               onClick={toggleMic}
+              aria-label={listening ? 'Stop recording voice input' : 'Start speech voice input'}
               title={listening ? 'Stop recording' : 'Speech input'}
               className={`flex items-center justify-center w-8 h-8 rounded-lg transition cursor-pointer relative ${
                 listening
@@ -286,6 +290,8 @@ const ChatInput = forwardRef(function ChatInput(props, ref) {
           <button
             type="button"
             disabled={!canSubmit}
+            aria-label="Send Message"
+            title="Send Message"
             onClick={handleSendMessage}
             className={`flex items-center justify-center w-8 h-8 rounded-xl border-none transition-all duration-200 ${
               canSubmit

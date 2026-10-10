@@ -38,6 +38,17 @@ function BillingDrawer({ open, onClose }) {
     };
   }, [open]);
 
+  useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && onClose) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [open, onClose]);
+
   const handleUpgrade = async (plan) => {
     try {
       const data = await createOrder(plan);
@@ -113,6 +124,7 @@ function BillingDrawer({ open, onClose }) {
               <button
                 type="button"
                 onClick={onClose}
+                aria-label="Close billing drawer"
                 className="w-8 h-8 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-slate-400 hover:text-white flex items-center justify-center transition cursor-pointer"
               >
                 <X size={15} />
