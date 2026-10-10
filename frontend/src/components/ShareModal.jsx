@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { X, Copy, Check, Download, Share2, Globe, Lock, FileText, FileCode } from 'lucide-react';
+import { Copy, Check, Download, Share2, Globe, Lock, FileText, FileCode } from 'lucide-react';
+import Modal from './ui/Modal';
 import { shareConversation } from '../features/shareConversation';
 
-function ShareModal({ conversation, messages, onClose }) {
+function ShareModal({ conversation, messages = [], onClose }) {
   const [isShared, setIsShared] = useState(conversation?.isShared || false);
   const [shareToken, setShareToken] = useState(conversation?.shareToken || null);
   const [loading, setLoading] = useState(false);
@@ -83,7 +84,7 @@ function ShareModal({ conversation, messages, onClose }) {
           ${m.role === 'user' ? 'USER' : 'MULTIORAAI'}
         </div>
         <div style="font-size: 14px; line-height: 1.6; color: #334155; white-space: pre-wrap; word-break: break-word;">
-          ${m.content.replace(/</g, '&lt;').replace(/>/g, '&gt;')}
+          ${m.content ? m.content.replace(/</g, '&lt;').replace(/>/g, '&gt;') : ''}
         </div>
       </div>
     `
@@ -127,104 +128,136 @@ function ShareModal({ conversation, messages, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="w-full max-w-md bg-[#13151c] border border-white/[0.08] rounded-2xl p-6 shadow-2xl flex flex-col gap-5 text-white">
-        <div className="flex items-center justify-between border-b border-white/[0.06] pb-4">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400">
-              <Share2 size={16} />
-            </div>
-            <div>
-              <h3 className="text-base font-semibold text-slate-100">Share & Export</h3>
-              <p className="text-xs text-slate-400 truncate max-w-[260px]">{conversation.title || 'New Chat'}</p>
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            className="w-7 h-7 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] flex items-center justify-center transition"
-          >
-            <X size={16} />
-          </button>
-        </div>
-
-        {/* Public Share Link Section */}
-        <div className="flex flex-col gap-3 bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
+    <Modal
+      isOpen={Boolean(conversation)}
+      onClose={onClose}
+      title="Share & Export"
+      description={conversation.title || 'Active Conversation'}
+      icon={Share2}
+      iconVariant="indigo"
+      maxWidth="lg"
+      footer={
+        <button
+          type="button"
+          onClick={onClose}
+          className="px-4 py-2 rounded-xl text-xs font-medium text-slate-300 hover:bg-white/[0.06] hover:text-white transition cursor-pointer"
+        >
+          Close
+        </button>
+      }
+    >
+      <div className="flex flex-col gap-5 select-none">
+        {/* Public Share Link Card */}
+        <div className="flex flex-col gap-3 bg-white/[0.03] border border-white/[0.08] rounded-2xl p-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {isShared ? <Globe size={16} className="text-emerald-400" /> : <Lock size={16} className="text-slate-400" />}
-              <span className="text-sm font-medium text-slate-200">
-                {isShared ? 'Public Link Enabled' : 'Public Link Disabled'}
-              </span>
+            <div className="flex items-center gap-2.5">
+              <div
+                className={`w-7 h-7 rounded-lg border flex items-center justify-center ${
+                  isShared
+                    ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-400'
+                    : 'bg-white/[0.04] border-white/10 text-slate-400'
+                }`}
+              >
+                {isShared ? <Globe size={14} /> : <Lock size={14} />}
+              </div>
+              <div>
+                <span className="text-xs font-semibold text-slate-200 block">
+                  {isShared ? 'Public Web Link Active' : 'Private Conversation'}
+                </span>
+                <span className="text-[11px] text-slate-500">
+                  {isShared
+                    ? 'Anyone with this URL can view a read-only snapshot'
+                    : 'Only you have access to this conversation'}
+                </span>
+              </div>
             </div>
+
             <button
+              type="button"
               disabled={loading}
               onClick={handleToggleShare}
-              className={`text-xs px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
+              className={`text-xs px-3.5 py-1.5 rounded-xl font-semibold transition cursor-pointer border ${
                 isShared
-                  ? 'bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20'
-                  : 'bg-indigo-600 text-white hover:bg-indigo-500'
+                  ? 'bg-red-500/10 text-red-400 hover:bg-red-500/20 border-red-500/25'
+                  : 'bg-linear-to-r from-indigo-500 to-violet-600 text-white border-white/20 shadow-sm hover:opacity-95'
               }`}
             >
-              {loading ? 'Updating...' : isShared ? 'Disable Link' : 'Create Link'}
+              {loading ? 'Updating...' : isShared ? 'Disable Link' : 'Generate Link'}
             </button>
           </div>
 
+          {/* Copy Link Input Bar */}
           {isShared && shareUrl && (
             <div className="flex items-center gap-2 mt-1">
               <input
                 readOnly
                 value={shareUrl}
-                className="flex-1 bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-xs text-slate-300 outline-none"
+                className="flex-1 bg-black/50 border border-white/10 rounded-xl px-3 py-2 text-xs text-slate-200 outline-none font-mono"
               />
               <button
+                type="button"
                 onClick={handleCopy}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-xs font-medium text-white transition cursor-pointer shrink-0"
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition cursor-pointer shrink-0 border ${
+                  copied
+                    ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
+                    : 'bg-indigo-600 hover:bg-indigo-500 text-white border-transparent'
+                }`}
               >
-                {copied ? <Check size={14} /> : <Copy size={14} />}
-                {copied ? 'Copied' : 'Copy'}
+                {copied ? <Check size={13} /> : <Copy size={13} />}
+                <span>{copied ? 'Copied' : 'Copy'}</span>
               </button>
             </div>
           )}
 
-          <p className="text-[11px] text-slate-500 leading-relaxed">
-            {isShared
-              ? 'Anyone with this link can view a read-only copy. Your account details and credits are completely hidden.'
-              : 'Public link is disabled. Only you have access to this conversation.'}
+          <p className="text-[11px] text-slate-500 leading-relaxed border-t border-white/[0.04] pt-2.5">
+            Your user profile, account credits, and private session credentials are kept completely hidden from public viewers.
           </p>
         </div>
 
-        {/* Export Options Section */}
-        <div className="flex flex-col gap-2">
-          <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Export Conversation</span>
-          <div className="grid grid-cols-3 gap-2">
+        {/* Export Options Grid */}
+        <div className="flex flex-col gap-2.5">
+          <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-slate-400">
+            Export Transcript
+          </span>
+          <div className="grid grid-cols-3 gap-2.5">
             <button
+              type="button"
               onClick={exportPdf}
-              className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.06] hover:border-indigo-500/30 text-slate-300 hover:text-white transition cursor-pointer"
+              className="flex flex-col items-center justify-center gap-2 p-3.5 rounded-2xl bg-[#0c0e17]/80 hover:bg-[#121524] border border-white/[0.07] hover:border-indigo-500/30 text-slate-300 hover:text-white transition cursor-pointer group shadow-sm text-center"
             >
-              <Download size={18} className="text-red-400" />
-              <span className="text-xs font-medium">PDF Document</span>
+              <div className="w-8 h-8 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 group-hover:scale-105 transition">
+                <Download size={15} />
+              </div>
+              <span className="text-xs font-medium">PDF Print</span>
             </button>
 
             <button
+              type="button"
               onClick={exportMarkdown}
-              className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.06] hover:border-indigo-500/30 text-slate-300 hover:text-white transition cursor-pointer"
+              className="flex flex-col items-center justify-center gap-2 p-3.5 rounded-2xl bg-[#0c0e17]/80 hover:bg-[#121524] border border-white/[0.07] hover:border-indigo-500/30 text-slate-300 hover:text-white transition cursor-pointer group shadow-sm text-center"
             >
-              <FileCode size={18} className="text-indigo-400" />
+              <div className="w-8 h-8 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 group-hover:scale-105 transition">
+                <FileCode size={15} />
+              </div>
               <span className="text-xs font-medium">Markdown</span>
             </button>
 
             <button
+              type="button"
               onClick={exportText}
-              className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.06] hover:border-indigo-500/30 text-slate-300 hover:text-white transition cursor-pointer"
+              className="flex flex-col items-center justify-center gap-2 p-3.5 rounded-2xl bg-[#0c0e17]/80 hover:bg-[#121524] border border-white/[0.07] hover:border-indigo-500/30 text-slate-300 hover:text-white transition cursor-pointer group shadow-sm text-center"
             >
-              <FileText size={18} className="text-amber-400" />
+              <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 group-hover:scale-105 transition">
+                <FileText size={15} />
+              </div>
               <span className="text-xs font-medium">Plain Text</span>
             </button>
           </div>
         </div>
       </div>
-    </div>
+    </Modal>
   );
 }
 
 export default ShareModal;
+
